@@ -1,0 +1,222 @@
+
+Implementing a basic JWKS Server
+
+
+Objective
+Develop a RESTful JWKS server that provides public keys with unique identifiers (kid) for verifying JSON Web Tokens (JWTs), implements key expiry for enhanced security, includes an authentication endpoint, and handles the issuance of JWTs with expired keys based on a query parameter.
+
+Chooses an appropriate language and web server for the task.
+
+Due to the simplicity of this assignment, I would prefer you complete it with an unfamiliar language… but as I have no way to verify it, it’s not considered part of the rubric.
+
+This project is for educational purposes. In a real-world scenario, you’d want to integrate with a proper authentication system and ensure security best practices.
+
+Background
+    HTTP/web servicesLinks to an external site.
+        Familiarize yourself with client/server HTTP services.
+    RESTLinks to an external site.
+        Familiarize yourself with correct HTTP methods/headers/status codes for RESTful APIs.
+    JOSE: JWTLinks to an external site., JWK (and JWKS):Links to an external site.
+        Familiarize yourself with the concepts of JWT, JWK.
+        Understand the importance of key expiry, and kid.
+
+
+
+Requirements
+    Key Generation
+        Implement RSA key pair generation.
+        Associate a Key ID (kid) and expiry timestamp with each key.
+    Web server with two handlers
+        Serve HTTP on port 8080
+        A RESTful JWKS endpoint that serves the public keys in JWKS format.
+            Only serve keys that have not expired.
+    A /auth endpoint that returns an unexpired, signed JWT on a POST request.
+        If the “expired” query parameter is present, issue a JWT signed with the expired key pair and the expired expiry.
+Documentation
+    Code should be organized.
+    Code should be commented where needed.
+    Code should be linted per your language/framework.
+Tests
+    Test suite for your given language/framework with tests for you.
+    Test coverage should be over 80%.
+Blackbox testing
+    Ensure the included test clientLinks to an external site. functions against your server.
+    The testing client will attempt a POST to /auth with no body. There is no need to check authentication for this project.
+        NOTE: We are not actually testing user authentication, just mocking authentication and returning a valid JWT for this user
+
+Note:
+    Using kid in JWKS is crucial for systems to identify which key to use for JWT verification. Ensure that the JWTs include the kid in their headers and that the JWKS server can serve the correct key when requested with a specific kid.
+
+Expected Outcome
+    At the end of the project, you should have a functional JWKS server with a RESTful API that can serve public keys with expiry and unique kid to verify JWTs.
+
+    The server should authenticate fake users requests, issue JWTs upon successful authentication, and handle the “expired” query parameter to issue JWTs signed with an expired key.
+
+    This project should take 1-12 hours, depending on your familiarity with your chosen language/framework, and web servers in general.
+
+Deliverables
+    Provide a link to your GitHub repo containing your code.
+        Include in the repo a screenshot of the test clientLinks to an external site. running against your server.
+        Include in the repo a screenshot of your test suite (if present) showing the coverage percent.
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Generate RSA (Public, Private Key pair)
+
+Serialize the public key in JWKS format
+
+Function to enable new key with an expiration time
+
+JWKS endpoints:
+    Return the list of unexpired public keys in JSON sub format with KID.
+    To return only unexpired public keys.
+
+/auth endpoints:
+
+    For issuing JWTs
+    Check expired key
+    Create new in case no new exists
+
+Create the JWT payload
+
+Sign the JWT with the private key
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+python3 -m venv venv
+
+(mac/linux distro)
+source venv/bin/activate
+
+(windows)
+.\venv\Scripts\activate
+
+pip install flask cryptography pyjwt
+
+
+pip freeze > requirements.txt
+
+
+Check Flask Version if any Issues
+        pip show Flask
+
+        pip install --upgrade Flask
+
+
+
+Make sure to install pytest
+    pip install pytest pyjwt
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+Key Features
+
+    Key Generation (generate_key_pair): Generates an RSA key pair and associates a kid with it. Keys expire after 1 hour, stored in the keys list.
+
+    JWKS Endpoint (/well-known/jwks.json): Returns a list of unexpired public keys in JSON Web Key Set (JWKS) format.
+
+    Auth Endpoint (/auth): Generates a JWT signed with an unexpired key by default. If the expired query parameter is passed, it issues a JWT signed with an expired key, if available.
+
+Running the Server
+    Run the server by executing the script:
+
+                python jwks_server.py
+
+                
+The server listens on port 8080. You can access the JWKS at http://localhost:8080/.well-known/jwks.json and obtain a JWT by POSTing to http://localhost:8080/auth.
+
+Example Requests
+    Get Public Keys (JWKS):
+        GET http://localhost:8080/.well-known/jwks.json
+
+
+    Get JWT (unexpired key):
+        POST http://localhost:8080/auth
+
+
+    Get JWT (expired key):
+        POST http://localhost:8080/auth?expired=true
+        
+
+Testing and Documentation
+    You can write tests using unittest or pytest to cover key functionalities such as JWT issuance and key expiry.
+
+    Ensure the code is well-organized and commented to meet the project’s linting requirements.
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+1. Set Up Your Environment:
+You need to install the required dependencies for this project. You can do this by creating a virtual environment and installing the necessary packages.
+
+Step-by-Step:
+
+    Create a Virtual Environment:
+
+    On macOS/Linux:
+        python3 -m venv venv
+        source venv/bin/activate
+
+    On Windows:
+        python -m venv venv
+        .\venv\Scripts\activate
+
+
+
+Install Dependencies: 
+    Once the virtual environment is activated, install the packages from the requirements.txt file you uploaded:
+
+    pip install -r /path/to/requirements.txt
+
+    python3 -m pip install pytest
+
+
+    Based on your requirements.txt file​(requirements), the following packages will be installed:
+        Flask
+        cryptography
+        PyJWT
+        And other supporting libraries
+
+
+2. Run the Server:
+    Assuming p1.py is the main server file (similar to a Flask app):
+
+    Run the server:
+        python /path/to/p1.py
+        This will start the Flask server on the specified port (probably port 8080 if it matches earlier descriptions).
+
+3. Test the Server:
+    Once the server is running, you can use the test suite to verify the endpoints and JWT handling.
+
+    Run the test suite: Assuming testsuite.py contains the necessary tests, run it using:
+        python /path/to/testsuite.py
+
+4. Manual Testing:
+    You can also manually test the JWKS and /auth endpoints using a tool like Postman or curl.
+
+        Example GET Request to JWKS:
+        curl http://localhost:8080/.well-known/jwks.json
+
+
+        Example POST Request to /auth:
+        curl -X POST http://localhost:8080/auth
